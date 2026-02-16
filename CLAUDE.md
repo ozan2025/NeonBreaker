@@ -16,16 +16,21 @@ NeonBreaker is a single-file Arkanoid/Breakout PWA game. Target audience: friend
 - 10 levels, 11 power-ups, 250 particle pool
 
 ## When Making Changes
-- Bump the version string on the start screen (search for `'v3'` or current version)
+- Bump the version string on the start screen (search for `'v4'` or current version)
 - Bump `CACHE_NAME` in `sw.js` if you want existing PWA installs to update
-- After changes: `git add index.html && git commit && git push` — GitHub Pages auto-deploys
+- After changes: `git add index.html sw.js && git commit && git push` — GitHub Pages auto-deploys
 - Test on mobile viewport (375x812) and desktop — game must scale to both
 - All game state is in the `G` object inside the IIFE — not accessible from console
 
-## Touch Controls
-- Uses **frame-by-frame delta** tracking (not absolute position)
-- The `1.4` multiplier on touch delta makes it feel responsive
-- Do NOT change back to absolute-delta — it caused corner-sticking bugs
+## Paddle Controls (v4+)
+- Uses **position-based with lerp easing** - paddle moves toward touch/mouse position
+- `PADDLE_EASING = 0.25` constant controls responsiveness (can tune 0.2-0.3)
+- Unified `processInput()` handles both touch and mouse with same lerp logic
+- `input.touchX` stores target position (not delta tracking)
+- Touch handlers just update position, movement happens in processInput()
+- REVERSE power-up mirrors target position before lerp
+- **Tested and approved** - smooth and responsive on iPhone
+- Do NOT revert to delta-based system (v1-v3) - position-based is proven better
 
 ## Ozan Easter Eggs
 These are intentional and should be preserved:
@@ -39,7 +44,7 @@ All synthesized via Web Audio API — no audio files. `initAudio()` is called la
 
 ## Don't Break
 - Offline functionality (SW caching)
-- Touch controls (delta-based, not position-based)
+- Paddle controls (position-based with lerp, not delta-based)
 - The IIFE wrapper (prevents global pollution)
 - Power-up timer display (uses explicit `effectMap`, not index-based)
 - `G.beaten` flag (distinguishes victory from game-over)
