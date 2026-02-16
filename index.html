@@ -96,6 +96,8 @@ const STATE_PAUSE = 3;
 const STATE_WIN = 4;
 const STATE_OVER = 5;
 
+const PADDLE_EASING = 0.25;  // Easing factor for smooth paddle movement
+
 // ═══════════════════════════════════════════════════════
 // SECTION 2: CANVAS SETUP & SCALING
 // ═══════════════════════════════════════════════════════
@@ -714,7 +716,7 @@ const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 const input = {
   mouseX: GAME_WIDTH/2, mouseActive: false,
-  touchActive: false, touchLastX: 0,
+  touchActive: false, touchX: GAME_WIDTH/2,
   tap: false, reversed: false,
 };
 
@@ -736,7 +738,7 @@ canvas.addEventListener('touchstart', e => {
   input.touchActive = true;
   input.mouseActive = false;
   const t = e.touches[0];
-  input.touchLastX = toLogical(t.clientX, t.clientY).x;
+  input.touchX = toLogical(t.clientX, t.clientY).x;
   input.tap = true;
 }, { passive: false });
 
@@ -744,12 +746,7 @@ canvas.addEventListener('touchmove', e => {
   e.preventDefault();
   if (!input.touchActive || !e.touches.length) return;
   const t = e.touches[0];
-  const cx = toLogical(t.clientX, t.clientY).x;
-  let delta = cx - input.touchLastX;
-  input.touchLastX = cx;
-  if (input.reversed) delta = -delta;
-  paddle.x += delta * 1.4;
-  paddle.x = Math.max(paddle.w/2, Math.min(GAME_WIDTH - paddle.w/2, paddle.x));
+  input.touchX = toLogical(t.clientX, t.clientY).x;
 }, { passive: false });
 
 canvas.addEventListener('touchend', e => {
@@ -760,11 +757,26 @@ canvas.addEventListener('touchend', e => {
 document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
 
 function processInput() {
-  if (input.mouseActive && !input.touchActive) {
-    let tx = input.mouseX;
-    if (input.reversed) tx = GAME_WIDTH - tx;
-    paddle.x = tx;
+  let targetX;
+
+  // Determine target position based on active input
+  if (input.touchActive) {
+    targetX = input.touchX;
+  } else if (input.mouseActive) {
+    targetX = input.mouseX;
+  } else {
+    return;  // No active input
   }
+
+  // Apply REVERSE power-up (mirror target position)
+  if (input.reversed) {
+    targetX = GAME_WIDTH - targetX;
+  }
+
+  // Lerp paddle toward target position
+  paddle.x += (targetX - paddle.x) * PADDLE_EASING;
+
+  // Clamp to bounds
   paddle.x = Math.max(paddle.w/2, Math.min(GAME_WIDTH - paddle.w/2, paddle.x));
 }
 
@@ -1510,7 +1522,7 @@ function renderStartScreen() {
   // Version
   ctx.font = '10px Rajdhani, sans-serif';
   ctx.fillStyle = '#666';
-  ctx.fillText('v3', GAME_WIDTH/2, GAME_HEIGHT/2 + 188);
+  ctx.fillText('v4', GAME_WIDTH/2, GAME_HEIGHT/2 + 188);
   ctx.restore();
 
   // Demo ball bouncing
