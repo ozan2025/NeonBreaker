@@ -1507,6 +1507,10 @@ function renderStartScreen() {
   ctx.fillStyle = '#666';
   ctx.fillText('HIGH SCORE: ' + G.highScore, GAME_WIDTH/2, GAME_HEIGHT/2 + 140);
   ctx.fillText('HIGHEST LEVEL: ' + G.highLevel, GAME_WIDTH/2, GAME_HEIGHT/2 + 160);
+  // Version
+  ctx.font = '10px Rajdhani, sans-serif';
+  ctx.fillStyle = '#333';
+  ctx.fillText('v3', GAME_WIDTH/2, GAME_HEIGHT - 15);
   ctx.restore();
 
   // Demo ball bouncing
