@@ -1493,7 +1493,7 @@ function renderStartScreen() {
   ctx.fillText('An Ozan Selcuk Production', GAME_WIDTH/2, GAME_HEIGHT/2 + 5);
   ctx.shadowBlur = 0;
   ctx.font = '11px Rajdhani, sans-serif';
-  ctx.fillStyle = '#555';
+  ctx.fillStyle = '#888';
   ctx.fillText('crafted with mass amounts of caffeine', GAME_WIDTH/2, GAME_HEIGHT/2 + 22);
   // Tap to start
   const blink = Math.sin(titlePulse * 2) > 0;
@@ -1509,7 +1509,7 @@ function renderStartScreen() {
   ctx.fillText('HIGHEST LEVEL: ' + G.highLevel, GAME_WIDTH/2, GAME_HEIGHT/2 + 160);
   // Version
   ctx.font = '10px Rajdhani, sans-serif';
-  ctx.fillStyle = '#333';
+  ctx.fillStyle = '#666';
   ctx.fillText('v3', GAME_WIDTH/2, GAME_HEIGHT - 15);
   ctx.restore();
 
